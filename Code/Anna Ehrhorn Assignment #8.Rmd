@@ -1,0 +1,130 @@
+---
+title: "Assignment #8"
+author: "Anna Ehrhorn"
+version: 1.0
+date: "April 4, 2020"
+output: html_notebook
+---
+
+
+*The assignment is focusing on our continued learning of knowledge and skills*
+*related to function developmental and application, and Geoms.*
+
+
+***
+### Question 1
+
+My challenge is to construct a function that will create an extra column 
+to sum total score of a likert score while accounting for revere scored items.
+
+Required within the function are the following:
+
+*Data frame with rows indicating individuals and columns indicating items.
+
+*A numeric indicating the scale used for the items.
+
+*A numeric vector to indicate which items to be revered scored when summing 
+scores to calculate the total score.
+
+```{r}
+surv.tot.score <- function(my.surv.data, scale.num, vector.num){
+  # Changing to a matrix
+  matrix.surv.data <- as.matrix(my.surv.data)
+  
+  # Score vectors identified as vector.num as mirror-lower
+  reg.score.items <- matrix.surv.data[,!vector.num]
+  rev.score.items <- matrix.surv.data[,vector.num]
+  
+  reg.score <- sum(reg.score.items)
+  rev.score <- sum(scale.num - rev.score.items)
+  
+  # Add together score of each item for each individual
+ for(matrix.surv.data[, 1:ncol], matrix.surv.data[1:nrow,]){
+    # Sum of regular and reversed scored items
+    sum.tot.score <- reg.score + rev.score
+    return(sum.tot.score)
+  }
+  
+  # Add on column of sum.tot.score to matrix
+  matrix.surv.data.2 <- cbind(matrix.surv.data, sum.tot.score)
+  
+  # Convert to data.frame
+  my.surv.data.2 <- as.data.frame(matrix.surv.data.2)
+
+  return(write.csv(my.surv.data.2, col_names = TRUE))
+}
+```
+
+
+***
+### Question 2
+
+Using the *Survey Data* to test out the function, *surv.tot.score*, that will print 
+out a CSV file which contains the orginal data with the total score added. 
+
+```{r include=FALSE}
+library(here)
+
+survey.data <- read.csv(here("Data", "survey.csv"))
+```
+
+```{r}
+surv.tot.score(survey.data, 6, survey.data["item_3", "item_5", "item_6"])
+```
+
+
+***
+### Question 3
+
+Constructing a single scatter plot showing the relationship of science scores
+to math scores by gender using hsb2 data and ggplot.
+
+```{r include=FALSE}
+library(tidyverse)
+library(here)
+
+hsb2 <- read_csv(here("Data", "hsb2.csv"))
+
+problems(hsb2)
+```
+
+```{r}
+ggplot(data = hsb2) +
+  geom_point(mapping = aes(x = science, y = math, color = female)) +
+  labs(x = "Standardized Science Score", y = "Standardized Math Score", 
+  title = "Relationship between Science and Math Scores by Gender")
+  
+# Unsure of how to rename legend to "Gender" and make two different colors/shapes
+  
+  
+```
+
+
+***
+### Question 4
+
+This scatterplot is showing the same relationship, but with each gender with a 
+seperate scatterplot.
+
+```{r}
+ggplot(data = hsb2) +
+  geom_point(mapping = aes(x = science, y = math)) +
+  labs(x = "Standardized Science Score", y = "Standardized Math Score", 
+  title = "Relationship between Science and Math Scores by Gender") +
+  facet_grid( ~ female)
+```
+
+
+***
+### Question 5
+
+A graph created using the *geom_boxplot* to illustrate math scores for each 
+socioeconomic status level.
+
+```{r}
+ggplot(data = hsb2) +
+  geom_boxplot(mapping = aes(x = ses, y = math, fill = ses, group = ses)) +
+  labs(x = "Socioeconomic Status (from Low to High)", y = "Math Standard Score", 
+  title = "Math Scores by Socioeconomic Status")
+```
+
