@@ -1,9 +1,11 @@
 ---
-title: "Assignment #8"
+title: 'Assignment #8'
 author: "Anna Ehrhorn"
-version: 1.0
 date: "April 4, 2020"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
+version: 1
 ---
 
 
