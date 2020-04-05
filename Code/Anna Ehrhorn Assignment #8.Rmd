@@ -14,16 +14,16 @@ output: html_notebook
 ***
 ### Question 1
 
-My challenge is to construct a function that will create an extra column 
+This is a function that will create an extra column 
 to sum total score of a likert score while accounting for revere scored items.
 
 Required within the function are the following:
 
-*Data frame with rows indicating individuals and columns indicating items.
+* Data frame with rows indicating individuals and columns indicating items.
 
-*A numeric indicating the scale used for the items.
+* A numeric indicating the scale used for the items.
 
-*A numeric vector to indicate which items to be revered scored when summing 
+* A numeric vector to indicate which items to be revered scored when summing 
 scores to calculate the total score.
 
 ```{r}
@@ -31,27 +31,16 @@ surv.tot.score <- function(my.surv.data, scale.num, vector.num){
   # Changing to a matrix
   matrix.surv.data <- as.matrix(my.surv.data)
   
-  # Score vectors identified as vector.num as mirror-lower
-  reg.score.items <- matrix.surv.data[,!vector.num]
-  rev.score.items <- matrix.surv.data[,vector.num]
+  # Reverse scoring
+  matrix.surv.data[,vector.num] <- (scale.num + 1) - matrix.surv.data[,vector.num]
   
-  reg.score <- sum(reg.score.items)
-  rev.score <- sum(scale.num - rev.score.items)
+  # Sum of rows using a vector function
+  sum.tot.score <- rowSums(matrix.surv.data)
   
-  # Add together score of each item for each individual
- for(matrix.surv.data[, 1:ncol], matrix.surv.data[1:nrow,]){
-    # Sum of regular and reversed scored items
-    sum.tot.score <- reg.score + rev.score
-    return(sum.tot.score)
-  }
+  # Add on column of sum.tot.score to original dataframe
+  my.surv.data$sum <- sum.tot.score
   
-  # Add on column of sum.tot.score to matrix
-  matrix.surv.data.2 <- cbind(matrix.surv.data, sum.tot.score)
-  
-  # Convert to data.frame
-  my.surv.data.2 <- as.data.frame(matrix.surv.data.2)
-
-  return(write.csv(my.surv.data.2, col_names = TRUE))
+  return(my.surv.data)
 }
 ```
 
@@ -59,8 +48,8 @@ surv.tot.score <- function(my.surv.data, scale.num, vector.num){
 ***
 ### Question 2
 
-Using the *Survey Data* to test out the function, *surv.tot.score*, that will print 
-out a CSV file which contains the orginal data with the total score added. 
+Using the *Survey Data* to test out the function, *surv.tot.score*, that will 
+print out a CSV file which contains the orginal data with the total score added. 
 
 ```{r include=FALSE}
 library(here)
@@ -69,7 +58,13 @@ survey.data <- read.csv(here("Data", "survey.csv"))
 ```
 
 ```{r}
-surv.tot.score(survey.data, 6, survey.data["item_3", "item_5", "item_6"])
+complete.survey.data <- surv.tot.score(survey.data[,2:9], 6, c(3, 5, 6))
+
+complete.survey.data$ID <- survey.data$ID
+
+complete.survey.data2 <- complete.survey.data[c(10, 1, 2, 3, 4, 5, 6, 7, 8, 9)]
+
+write.csv(complete.survey.data2, here("Data", "Survey Data Complete.csv"))
 ```
 
 
@@ -93,10 +88,6 @@ ggplot(data = hsb2) +
   geom_point(mapping = aes(x = science, y = math, color = female)) +
   labs(x = "Standardized Science Score", y = "Standardized Math Score", 
   title = "Relationship between Science and Math Scores by Gender")
-  
-# Unsure of how to rename legend to "Gender" and make two different colors/shapes
-  
-  
 ```
 
 
